@@ -1,0 +1,8 @@
+/build/
+/cmake-build-*/
+/.cache/
+/.vscode/
+*.o
+*.obj
+*.exe
+compile_commands.json
