@@ -1,0 +1,182 @@
+X86-64 EMULATOR: GETTING-STARTED READING GUIDE
+================================================
+
+Do not try to read the x86 manuals cover-to-cover. Use them as specifications
+and study one architectural topic at a time.
+
+
+MILESTONE 1: CPU STATE AND INTEGER FLAGS
+----------------------------------------
+
+1. CPU state and registers
+
+Intel 64 and IA-32 Software Developer's Manual:
+https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+
+Download Volumes 1 and 2 separately. They are easier to navigate than the
+enormous combined manual.
+
+From Volume 1, read the relevant parts of "Basic Execution Environment":
+
+  - General-purpose registers
+  - Instruction pointer
+  - RFLAGS register
+  - Operand-size behavior in 64-bit mode
+
+Questions to keep in mind:
+
+  - Why does writing EAX clear the upper 32 bits of RAX?
+  - What is unusual about AH, BH, CH, and DH?
+  - How do REX prefixes affect which registers are accessible?
+  - Which RFLAGS bits are status, control, system, or reserved bits?
+
+Volume 1 explains the architecture. Volume 2 specifies individual
+instructions.
+
+
+2. Arithmetic flags
+
+In Intel Volume 2, read the instruction entries for:
+
+  - ADD
+  - SUB
+  - ADC
+  - SBB
+  - CMP
+  - INC
+  - DEC
+  - NEG
+
+For convenient daily lookup, use the Felix Cloutier x86 reference:
+https://www.felixcloutier.com/x86/
+
+ADD entry:
+https://www.felixcloutier.com/x86/add
+
+The Felix Cloutier reference is an unofficial, mechanically generated copy.
+Use it for quick checks and navigation. Use the Intel or AMD manuals whenever
+correctness matters.
+
+For each arithmetic instruction, distinguish these flags:
+
+  - CF: unsigned carry or borrow
+  - OF: signed overflow
+  - SF: most-significant result bit
+  - ZF: whether the width-truncated result is zero
+  - PF: even parity of only the low result byte
+  - AF: carry or borrow across bit 3
+
+
+3. AMD's explanation
+
+AMD64 Architecture Programmer's Manual:
+https://docs.amd.com/api/khub/documents/68GKiN0gMEd6bMddsmhPwg/content
+
+From Volume 1, read the sections covering:
+
+  - Registers
+  - Operands
+  - General-purpose programming
+  - RFLAGS
+  - Arithmetic operations
+
+AMD's conceptual explanations are sometimes clearer than Intel's. Later,
+Volume 3 will serve as a second authoritative instruction reference. Intel 64
+and AMD64 are overwhelmingly compatible for our initial user-space emulator,
+but differences eventually matter.
+
+
+ASSEMBLY SYNTAX AND TOOLS
+-------------------------
+
+We will write Intel-syntax assembly with NASM.
+
+NASM manual:
+https://www.nasm.us/doc/
+
+Read the parts covering:
+
+  - The NASM language
+  - Constants
+  - Effective addresses
+  - BITS 64
+  - DEFAULT REL
+  - ELF64 output format
+  - GLOBAL and EXTERN
+  - The .text, .data, and .bss sections
+
+You should also recognize AT&T syntax because GCC, GNU as, and some debugger
+configurations use it.
+
+GNU assembler x86 documentation:
+https://www.sourceware.org/binutils/docs/as/i386_002dDependent.html
+
+Equivalent examples:
+
+  Intel/NASM:  mov rax, [rbx + 8]
+               add rax, rcx
+
+  AT&T:        movq 8(%rbx), %rax
+               addq %rcx, %rax
+
+
+DEBUGGING AND OBSERVATION
+-------------------------
+
+GDB machine code and disassembly:
+https://sourceware.org/gdb/download/onlinedocs/gdb.html/Machine-Code.html
+
+GDB register documentation:
+https://www.sourceware.org/gdb/current/onlinedocs/gdb.html/Registers.html
+
+GDB text user interface:
+https://sourceware.org/gdb/current/onlinedocs/gdb.html/TUI-Overview.html
+
+Useful commands:
+
+  set disassembly-flavor intel
+  layout asm
+  layout regs
+  info registers
+  info registers eflags
+  x/10i $rip
+  disassemble /r function_name
+  si
+  ni
+
+The disassemble /r command is particularly helpful because it displays raw
+instruction bytes alongside each decoded instruction.
+
+
+BOOKMARK FOR LATER MILESTONES
+-----------------------------
+
+System V AMD64 ABI -- calling conventions, stack alignment, argument passing,
+and ELF details:
+https://gitlab.com/x86-psABIs/x86-64-ABI
+
+Linux ELF documentation -- executable-file structure:
+https://www.man7.org/linux/man-pages/man5/elf.5.html
+
+GNU Binutils documentation -- objdump, readelf, nm, and related tools:
+https://sourceware.org/binutils/docs/binutils.pdf
+
+Intel SDM Volume 3 -- paging, protection, exceptions, debugging, and system
+programming. Download it from the Intel manuals page listed above.
+
+
+FIRST READING ASSIGNMENT
+------------------------
+
+Answer these questions in docs/learning-log.md using the manuals as evidence:
+
+  1. Why does 0xffffffffffffffff + 1 set CF but not OF?
+  2. Why does 0x7fffffffffffffff + 1 set OF but not CF?
+  3. Why does subtraction use CF to indicate a borrow?
+  4. Why does PF examine only the low byte?
+  5. Which instructions leave some flags undefined?
+
+Also review docs/architecture.md.
+
+The next coding exercise is operand-width-aware arithmetic for 8-, 16-, 32-,
+and 64-bit operations, followed by comparison against native hardware.
