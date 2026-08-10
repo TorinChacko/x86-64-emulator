@@ -29,8 +29,8 @@ If Ninja is unavailable, omit `-G Ninja`.
 
 ## Roadmap
 
-- [ ] **CPU core:** subregisters, arithmetic widths, shifts, condition codes
-- [ ] **Decoder:** legacy/REX prefixes, opcode maps, ModR/M, SIB, immediates
+- [Done] **CPU core:** subregisters, arithmetic widths, shifts, condition codes
+- [ In Progress] **Decoder:** legacy/REX prefixes, opcode maps, ModR/M, SIB, immediates
 - [ ] **Execution:** data movement, ALU, branches, calls, stack operations
 - [ ] **Memory:** little-endian reads, mapped regions, permissions, faults
 - [ ] **ELF:** load static ELF64 executables and establish process state
